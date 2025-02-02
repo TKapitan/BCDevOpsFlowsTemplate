@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
+			"path": ".azure-pipelines"
+		},
+		{
 			"path": "App"
 		},
 		{
 			"path": "Test"
-		},
-		{
-			"path": ".azure-pipelines"
 		}
 	],
 	"settings": {
