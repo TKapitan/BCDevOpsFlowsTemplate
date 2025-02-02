@@ -15,10 +15,10 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Test_NextMinor
+- job: Build_Create_Stable
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'TestNextMinor'
+    AL_PIPELINENAME: 'BuildAndCreateStable'
 
   steps:
   - checkout: self
@@ -59,6 +59,13 @@ jobs:
       searchFolder: '$(Common.TestResultsDirectory)'
       failTaskOnFailedTests: true
       failTaskOnFailureToPublishResults: true
+
+  - task: PowerShell@2
+    displayName: 'Store App file locally'
+    condition: succeeded()
+    inputs:
+      filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
+      failOnStderr: true
 
   - task: PowerShell@2
     displayName: 'Cleanup'
