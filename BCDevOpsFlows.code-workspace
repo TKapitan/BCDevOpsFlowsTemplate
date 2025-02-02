@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "App"
+		},
+		{
+			"path": "Test"
+		},
+		{
+			"path": ".azure-pipelines"
+		}
+	],
+	"settings": {
+		"al.enableCodeAnalysis": true,
+		"al.backgroundCodeAnalysis": "Project",
+		"al.enableCodeActions": true,
+		"al.enableExternalRulesets": true
+	}
+}

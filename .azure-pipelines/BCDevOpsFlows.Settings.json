@@ -1,0 +1,12 @@
+{
+  "type": "PTE",
+  "country": "au",
+  "appFolders": [
+    "App"
+  ],
+  "testFolders": [
+    "Test"
+  ],
+  "versioningStrategy": 10,
+  "cacheImageName": ""
+}
