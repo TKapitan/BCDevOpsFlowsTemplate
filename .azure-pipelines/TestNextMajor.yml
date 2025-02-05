@@ -46,7 +46,7 @@ jobs:
     displayName: 'Run Pipeline (Build)'
     inputs:
       filePath: '..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1'
-      arguments: '-artifact "$(artifact)"'
+      arguments: '-artifact "$(AL_ARTIFACT)"'
       warningPreference: 'continue'
       failOnStderr: true
 
