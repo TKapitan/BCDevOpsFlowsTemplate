@@ -1,11 +1,13 @@
 pr: none
 trigger: 
-- cron: '0 2 15 * *'
-  displayName: Fifteenth of every month
+- cron: '0 2 1 4,10 *'
+  displayName: First of April and October
   branches:
     include:
     - main
     - master
+    - preview
+    - test
 
 resources:
   repositories:
@@ -21,14 +23,16 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Test_NextMajor
+- job: Increment_Major_Version
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'TestNextMajor'
+    AL_PIPELINENAME: 'IncrementMajorVersion'
 
   steps:
   - checkout: self
     path: App
+    persistCredentials: true
+    clean: true
   - checkout: BCDevOpsFlows
     path: BCDevOpsFlows
 
@@ -43,28 +47,12 @@ jobs:
       filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
 
   - task: PowerShell@2
-    displayName: 'Determine Artifact Url'
+    displayName: 'Increment Major Version'
     inputs:
-      filePath: '..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1'
-      warningPreference: 'continue'
-
-  - task: PowerShell@2
-    displayName: 'Run Pipeline (Build)'
-    inputs:
-      filePath: '..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1'
-      arguments: '-artifact "$(AL_ARTIFACT)"'
-      warningPreference: 'continue'
+      filePath: '..\BCDevOpsFlows\IncrementVersion\IncrementVersion.ps1'
+      arguments: '-versionNumber "+1"'
       failOnStderr: true
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results'
-    condition: and(succeeded(),ne(variables['TestResults'],''))
-    inputs:
-      testResultsFormat: JUnit
-      testResultsFiles: '**/$(testResults)'
-      searchFolder: '$(Common.TestResultsDirectory)'
-      failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
+      warningPreference: 'continue'
 
   - task: PowerShell@2
     displayName: 'Cleanup'

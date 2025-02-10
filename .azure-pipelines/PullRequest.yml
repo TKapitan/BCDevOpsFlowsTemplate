@@ -1,11 +1,5 @@
 pr: none
-trigger: 
-- cron: '0 2 15 * *'
-  displayName: Fifteenth of every month
-  branches:
-    include:
-    - main
-    - master
+trigger: none
 
 resources:
   repositories:
@@ -21,10 +15,10 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Test_NextMajor
+- job: Pull_Request
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'TestNextMajor'
+    AL_PIPELINENAME: 'PullRequest'
 
   steps:
   - checkout: self

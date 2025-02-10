@@ -1,5 +1,11 @@
 pr: none
-trigger: none
+trigger: 
+- cron: '0 2 5 * *'
+  displayName: Fifth of every month
+  branches:
+    include:
+    - main
+    - master
 
 resources:
   repositories:
