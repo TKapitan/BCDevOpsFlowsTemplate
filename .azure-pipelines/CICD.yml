@@ -1,5 +1,9 @@
 pr: none
-trigger: none
+trigger: 
+  branches:
+    include:
+    - test
+    - preview
 
 resources:
   repositories:
@@ -15,11 +19,11 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Publish_Preview_To_Cloud
+- job: CICD
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'PublishPreviewToCloud'
-    environmentName: # Specify the name of the environment to deploy to
+    AL_PIPELINENAME: 'CICD'
+    environmentName: $(AL_CICD_ENVIRONMENTNAME)
 
   steps:
   - checkout: self
@@ -50,16 +54,6 @@ jobs:
       arguments: '-artifact "$(AL_ARTIFACT)"'
       warningPreference: 'continue'
       failOnStderr: true
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results'
-    condition: and(succeeded(),ne(variables['TestResults'],''))
-    inputs:
-      testResultsFormat: JUnit
-      testResultsFiles: '**/$(testResults)'
-      searchFolder: '$(Common.TestResultsDirectory)'
-      failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
 
   - task: PowerShell@2
     displayName: 'Store App file locally'
