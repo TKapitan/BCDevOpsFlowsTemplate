@@ -15,11 +15,10 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Publish_Stable_App_To_Cloud
+- job: Pull_Request
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'PublishStableAppToCloud'
-    environmentName: # Specify the name of the environment to deploy to
+    AL_PIPELINENAME: 'PullRequest'
 
   steps:
   - checkout: self
@@ -60,24 +59,6 @@ jobs:
       searchFolder: '$(Common.TestResultsDirectory)'
       failTaskOnFailedTests: true
       failTaskOnFailureToPublishResults: true
-
-  - task: PowerShell@2
-    displayName: 'Store App file locally'
-    condition: succeeded()
-    inputs:
-      filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
-      failOnStderr: true
-
-  - task: PowerShell@2
-    displayName: 'Deploy to Cloud'
-    condition: succeeded()
-    env:
-      AL_AUTHCONTEXTS_INTERNAL: $(AL_AUTHCONTEXT)
-    inputs:
-      filePath: '..\BCDevOpsFlows\DeployToCloud\DeployToCloud.ps1'
-      arguments: '-environmentName "$(environmentName)" -deploymentType "Publish"'
-      warningPreference: 'continue'
-      failOnStderr: true
 
   - task: PowerShell@2
     displayName: 'Cleanup'

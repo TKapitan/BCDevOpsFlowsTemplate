@@ -1,5 +1,9 @@
 pr: none
-trigger: none
+trigger: 
+  branches:
+    include:
+    - main
+    - master
 
 resources:
   repositories:
@@ -15,10 +19,11 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Build_Create_Preview
+- job: Publish_To_Production
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'BuildAndCreatePreview'
+    AL_PIPELINENAME: 'PublishToProduction'
+    environmentName: $(AL_PROD_ENVIRONMENTNAME)
 
   steps:
   - checkout: self
@@ -50,22 +55,22 @@ jobs:
       warningPreference: 'continue'
       failOnStderr: true
 
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results'
-    condition: and(succeeded(),ne(variables['TestResults'],''))
-    inputs:
-      testResultsFormat: JUnit
-      testResultsFiles: '**/$(testResults)'
-      searchFolder: '$(Common.TestResultsDirectory)'
-      failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
-
   - task: PowerShell@2
     displayName: 'Store App file locally'
     condition: succeeded()
     inputs:
       filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
-      arguments: '-isPreview'
+      failOnStderr: true
+
+  - task: PowerShell@2
+    displayName: 'Deploy to Cloud'
+    condition: succeeded()
+    env:
+      AL_AUTHCONTEXTS_INTERNAL: $(AL_AUTHCONTEXT)
+    inputs:
+      filePath: '..\BCDevOpsFlows\DeployToCloud\DeployToCloud.ps1'
+      arguments: '-environmentName "$(environmentName)" -deploymentType "Publish"'
+      warningPreference: 'continue'
       failOnStderr: true
 
   - task: PowerShell@2

@@ -15,16 +15,25 @@ variables:
 - group: BCDevOpsFlows
 
 jobs:
-- job: Build_Create_Stable
+- job: Build_With_NuGet
   timeoutInMinutes: 300
   variables:
-    AL_PIPELINENAME: 'BuildAndCreateStable'
+    AL_PIPELINENAME: 'BuildWithNuGet'
 
   steps:
   - checkout: self
     path: App
   - checkout: BCDevOpsFlows
     path: BCDevOpsFlows
+
+  steps:
+  - checkout: self
+    path: App
+  - checkout: BCDevOpsFlows
+    path: BCDevOpsFlows
+
+  - task: NuGetToolInstaller@1
+    displayName: Install Nuget
 
   - task: PowerShell@2
     displayName: 'Initialize'
@@ -37,34 +46,23 @@ jobs:
       filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
 
   - task: PowerShell@2
-    displayName: 'Determine Artifact Url'
+    displayName: 'Initialize Nuget'
     inputs:
-      filePath: '..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1'
-      warningPreference: 'continue'
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\InitNuget\InitNuget.ps1'
+  
+  - task: PowerShell@2
+    displayName: 'Determine Nuget Packages'
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\DetermineNugetPackages\DetermineNugetPackages.ps1'
 
   - task: PowerShell@2
-    displayName: 'Run Pipeline (Build)'
+    displayName: 'Build with Nuget'
     inputs:
-      filePath: '..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1'
-      arguments: '-artifact "$(AL_ARTIFACT)"'
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\BuildWithNuget\BuildWithNuget.ps1'
       warningPreference: 'continue'
-      failOnStderr: true
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results'
-    condition: and(succeeded(),ne(variables['TestResults'],''))
-    inputs:
-      testResultsFormat: JUnit
-      testResultsFiles: '**/$(testResults)'
-      searchFolder: '$(Common.TestResultsDirectory)'
-      failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
-
-  - task: PowerShell@2
-    displayName: 'Store App file locally'
-    condition: succeeded()
-    inputs:
-      filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
       failOnStderr: true
 
   - task: PowerShell@2
