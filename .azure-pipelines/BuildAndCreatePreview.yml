@@ -1,0 +1,76 @@
+pr: none
+trigger: none
+
+resources:
+  repositories:
+  - repository: BCDevOpsFlows
+    type: github
+    name: # Specify the link to your BCDevOpsFlows fork (format YourGitHubUsername/ForkName)
+    endpoint: # Specify the name of the service connection with access to your fork
+
+pool:
+  name: # Specify the name of the pool of your self-hosted agents
+
+variables:
+- group: BCDevOpsFlows
+
+jobs:
+- job: Build_Create_Preview
+  timeoutInMinutes: 300
+  variables:
+    AL_PIPELINENAME: 'BuildAndCreatePreview'
+
+  steps:
+  - checkout: self
+    path: App
+  - checkout: BCDevOpsFlows
+    path: BCDevOpsFlows
+
+  - task: PowerShell@2
+    displayName: 'Initialize'
+    inputs:
+      filePath: '..\BCDevOpsFlows\WorkflowInitialize\WorkflowInitialize.ps1'
+
+  - task: PowerShell@2
+    displayName: 'Read Settings'
+    inputs:
+      filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
+
+  - task: PowerShell@2
+    displayName: 'Determine Artifact Url'
+    inputs:
+      filePath: '..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1'
+      warningPreference: 'continue'
+
+  - task: PowerShell@2
+    displayName: 'Run Pipeline (Build)'
+    inputs:
+      filePath: '..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1'
+      arguments: '-artifact "$(AL_ARTIFACT)"'
+      warningPreference: 'continue'
+      failOnStderr: true
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    condition: and(succeeded(),ne(variables['TestResults'],''))
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: '**/$(testResults)'
+      searchFolder: '$(Common.TestResultsDirectory)'
+      failTaskOnFailedTests: true
+      failTaskOnFailureToPublishResults: true
+
+  - task: PowerShell@2
+    displayName: 'Store App file locally'
+    condition: succeeded()
+    inputs:
+      filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
+      arguments: '-isPreview'
+      failOnStderr: true
+
+  - task: PowerShell@2
+    displayName: 'Cleanup'
+    condition: always()
+    inputs:
+      filePath: '..\BCDevOpsFlows\PipelineCleanup\PipelineCleanup.ps1'
+      failOnStderr: false
