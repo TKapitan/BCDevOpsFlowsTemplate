@@ -1,0 +1,9 @@
+{
+  "artifact": "////latest",
+  "testFolders": [],
+  "customCodeCops": [],
+  "enableCodeCop": false,
+  "enableUICop": false,
+  "enableAppSourceCop": false,
+  "enablePerTenantExtensionCop": false
+}
