@@ -58,6 +58,15 @@ jobs:
       warningPreference: 'continue'
 
   - task: PowerShell@2
+    displayName: 'Push Changes Back to Repo (if any)'
+    condition: succeeded()
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\PushBackToRepo\PushBackToRepo.ps1'
+      failOnStderr: true
+      warningPreference: 'continue'
+
+  - task: PowerShell@2
     displayName: 'Cleanup'
     condition: always()
     inputs:
