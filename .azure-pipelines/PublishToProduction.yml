@@ -34,22 +34,26 @@ jobs:
   - task: PowerShell@2
     displayName: 'Initialize'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\WorkflowInitialize\WorkflowInitialize.ps1'
 
   - task: PowerShell@2
     displayName: 'Read Settings'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
 
   - task: PowerShell@2
     displayName: 'Determine Artifact Url'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1'
       warningPreference: 'continue'
 
   - task: PowerShell@2
     displayName: 'Run Pipeline (Build)'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1'
       arguments: '-artifact "$(AL_ARTIFACT)"'
       warningPreference: 'continue'
@@ -59,6 +63,7 @@ jobs:
     displayName: 'Store App file locally'
     condition: succeeded()
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
       failOnStderr: true
 
@@ -68,6 +73,7 @@ jobs:
     env:
       AL_AUTHCONTEXTS_INTERNAL: $(AL_AUTHCONTEXT)
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\DeployToCloud\DeployToCloud.ps1'
       arguments: '-environmentName "$(environmentName)" -deploymentType "Publish"'
       warningPreference: 'continue'
@@ -77,5 +83,6 @@ jobs:
     displayName: 'Cleanup'
     condition: always()
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\PipelineCleanup\PipelineCleanup.ps1'
       failOnStderr: false
