@@ -44,6 +44,18 @@ jobs:
       filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
 
   - task: PowerShell@2
+    displayName: 'Verify Auth Context'
+    condition: succeeded()
+    env:
+      AL_AUTHCONTEXTS_INTERNAL: $(AL_AUTHCONTEXT)
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\VerifyAuthContext\VerifyAuthContext.ps1'
+      arguments: '-environmentName "$(environmentName)"'
+      warningPreference: 'stop'
+      failOnStderr: true
+      
+  - task: PowerShell@2
     displayName: 'Determine Artifact Url'
     inputs:
       pwsh: true
