@@ -23,7 +23,7 @@ jobs:
   timeoutInMinutes: 300
   variables:
     AL_PIPELINENAME: 'PublishToProduction'
-    environmentName: $(AL_PROD_ENVIRONMENTNAME)
+    environmentsNameFilter: $(AL_PROD_ENVIRONMENTNAMESFILTER)
 
   steps:
   - checkout: self
@@ -51,7 +51,7 @@ jobs:
     inputs:
       pwsh: true
       filePath: '..\BCDevOpsFlows\VerifyAuthContext\VerifyAuthContext.ps1'
-      arguments: '-environmentName "$(environmentName)"'
+      arguments: '-environmentsNameFilter "$(environmentsNameFilter)"'
       warningPreference: 'stop'
       failOnStderr: true
       
@@ -87,7 +87,7 @@ jobs:
     inputs:
       pwsh: true
       filePath: '..\BCDevOpsFlows\DeployToCloud\DeployToCloud.ps1'
-      arguments: '-environmentName "$(environmentName)" -deploymentType "Publish"'
+      arguments: '-deployToEnvironmentsNameFilter "$(environmentsNameFilter)" -deploymentType "Publish"'
       warningPreference: 'continue'
       failOnStderr: true
 
