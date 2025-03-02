@@ -38,11 +38,13 @@ jobs:
   - task: PowerShell@2
     displayName: 'Initialize'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\WorkflowInitialize\WorkflowInitialize.ps1'
 
   - task: PowerShell@2
     displayName: 'Read Settings'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
 
   - task: PowerShell@2
@@ -69,5 +71,6 @@ jobs:
     displayName: 'Cleanup'
     condition: always()
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\PipelineCleanup\PipelineCleanup.ps1'
       failOnStderr: false

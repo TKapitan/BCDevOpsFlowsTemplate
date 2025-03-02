@@ -39,18 +39,30 @@ jobs:
   - task: PowerShell@2
     displayName: 'Initialize'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\WorkflowInitialize\WorkflowInitialize.ps1'
 
   - task: PowerShell@2
     displayName: 'Read Settings'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1'
 
   - task: PowerShell@2
     displayName: 'Increment Minor Version'
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\IncrementVersion\IncrementVersion.ps1'
       arguments: '-versionNumber "+0.1"'
+      failOnStderr: true
+      warningPreference: 'continue'
+
+  - task: PowerShell@2
+    displayName: 'Push Changes Back to Repo (if any)'
+    condition: succeeded()
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\PushBackToRepo\PushBackToRepo.ps1'
       failOnStderr: true
       warningPreference: 'continue'
 
@@ -58,5 +70,6 @@ jobs:
     displayName: 'Cleanup'
     condition: always()
     inputs:
+      pwsh: true
       filePath: '..\BCDevOpsFlows\PipelineCleanup\PipelineCleanup.ps1'
       failOnStderr: false
