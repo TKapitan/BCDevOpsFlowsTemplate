@@ -1,3 +1,4 @@
 {
-  "artifact": "////latest"
+  "artifact": "////latest",
+  "removeInternalsVisibleTo": false
 }
