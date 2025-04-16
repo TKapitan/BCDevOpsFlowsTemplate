@@ -22,9 +22,9 @@ jobs:
   - checkout: BCDevOpsFlows
     path: BCDevOpsFlows
   - task: NuGetToolInstaller@1
-    displayName: Nuget Install
+    displayName: NuGet Install
   - task: NuGetAuthenticate@1
-    displayName: Nuget Authenticate 
+    displayName: NuGet Authenticate 
   - task: PowerShell@2
     displayName: Initialize
     inputs:
