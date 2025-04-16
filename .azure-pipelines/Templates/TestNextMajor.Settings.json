@@ -1,0 +1,13 @@
+{
+  "artifact": "////nextmajor",
+  "workflowSchedule": {
+    "cron": "0 2 15 * *",
+    "displayName": "Fifteenth of every month",
+    "branches": {
+      "include": [
+        "main",
+        "master"
+      ]
+    }
+  }
+}

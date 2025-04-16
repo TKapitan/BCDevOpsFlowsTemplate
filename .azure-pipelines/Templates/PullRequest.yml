@@ -1,0 +1,79 @@
+pr: none
+trigger: none
+resources:
+  repositories:
+  - repository: BCDevOpsFlows
+    type: github
+    name: PLACEHOLDER
+    endpoint: PLACEHOLDER
+pool:
+  name: PLACEHOLDER
+variables:
+- group: PLACEHOLDER
+jobs:
+- job: PullRequest
+  timeoutInMinutes: 300
+  variables:
+    AL_PIPELINENAME: PullRequest
+  steps:
+  - checkout: self
+    path: App
+  - checkout: BCDevOpsFlows
+    path: BCDevOpsFlows
+  - task: NuGetToolInstaller@1
+    displayName: Nuget Install
+  - task: NuGetAuthenticate@1
+    displayName: Nuget Authenticate 
+  - task: PowerShell@2
+    displayName: Initialize
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\WorkflowInitialize\WorkflowInitialize.ps1
+  - task: PowerShell@2
+    displayName: Read Settings
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1
+  - task: PowerShell@2
+    displayName: Initialize Nuget
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\InitNuget\InitNuget.ps1
+  - task: PowerShell@2
+    displayName: Determine Artifact Url
+    env:
+      AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1
+      warningPreference: continue
+      showWarnings: true
+  - task: PowerShell@2
+    displayName: Run Pipeline (Build)
+    env:
+      AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1
+      arguments: -artifact "$(AL_ARTIFACT)"
+      warningPreference: continue
+      showWarnings: true
+      failOnStderr: true
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: and(succeeded(),ne(variables['TestResults'],''))
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: '**/$(testResults)'
+      searchFolder: $(Common.TestResultsDirectory)
+      failTaskOnFailedTests: true
+      failTaskOnFailureToPublishResults: true
+  - task: PowerShell@2
+    displayName: Cleanup
+    condition: always()
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\PipelineCleanup\PipelineCleanup.ps1
+      failOnStderr: false
+
+

@@ -1,0 +1,103 @@
+pr: none
+trigger: none
+schedules: PLACEHOLDER
+resources:
+  repositories:
+  - repository: BCDevOpsFlows
+    type: github
+    name: PLACEHOLDER
+    endpoint: PLACEHOLDER
+pool:
+  name: PLACEHOLDER
+variables:
+- group: PLACEHOLDER
+jobs:
+- job: CICD
+  timeoutInMinutes: 300
+  variables:
+    AL_PIPELINENAME: CICD
+    AL_ENVIRONMENTFILTER: $(AL_CICD_ENVIRONMENTNAME)
+  steps:
+  - checkout: self
+    path: App
+  - checkout: BCDevOpsFlows
+    path: BCDevOpsFlows
+  - task: NuGetToolInstaller@1
+    displayName: Nuget Install
+  - task: NuGetAuthenticate@1
+    displayName: Nuget Authenticate 
+  - task: PowerShell@2
+    displayName: Initialize
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\WorkflowInitialize\WorkflowInitialize.ps1
+  - task: PowerShell@2
+    displayName: Read Settings
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\ReadSettings\ReadSettings.ps1
+  - task: PowerShell@2
+    displayName: Verify Auth Context
+    condition: and(succeeded(),ne(variables['AL_AUTHCONTEXT'],''))
+    env:
+      AL_AUTHCONTEXTS_INTERNAL: $(AL_AUTHCONTEXT)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\VerifyAuthContext\VerifyAuthContext.ps1
+      arguments: -environmentsNameFilter "$(AL_ENVIRONMENTFILTER)"
+      warningPreference: continue
+      showWarnings: true
+      failOnStderr: true
+  - task: PowerShell@2
+    displayName: Initialize Nuget
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\InitNuget\InitNuget.ps1
+  - task: PowerShell@2
+    displayName: Determine Nuget Packages
+    env:
+      AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\DetermineNugetPackages\DetermineNugetPackages.ps1
+      warningPreference: continue
+      showWarnings: true
+  - task: PowerShell@2
+    displayName: Build with Nuget
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\BuildWithNuget\BuildWithNuget.ps1
+      warningPreference: continue
+      showWarnings: true
+      failOnStderr: true
+  - task: PowerShell@2
+    displayName: Deliver App Files
+    condition: succeeded()
+    env:
+      AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\DeliverAppFile\DeliverAppFile.ps1
+      arguments: -isPreview
+      failOnStderr: true
+  - task: PowerShell@2
+    displayName: Deploy to Cloud
+    condition: and(succeeded(),ne(variables['AL_AUTHCONTEXT'],''))
+    env:
+      AL_AUTHCONTEXTS_INTERNAL: $(AL_AUTHCONTEXT)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\DeployToCloud\DeployToCloud.ps1
+      arguments: -deployToEnvironmentsNameFilter "$(AL_ENVIRONMENTFILTER)" -deploymentType "CD"
+      warningPreference: continue
+      showWarnings: true
+      failOnStderr: true
+  - task: PowerShell@2
+    displayName: Cleanup
+    condition: always()
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\PipelineCleanup\PipelineCleanup.ps1
+      failOnStderr: false
+
+
