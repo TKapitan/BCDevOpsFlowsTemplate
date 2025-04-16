@@ -1,9 +1,13 @@
 pr: none
 trigger: 
+  batch: true
   branches:
     include:
     - main
     - master
+  paths:
+    exclude:
+    - .azure-pipelines
 
 resources:
   repositories:
@@ -23,13 +27,19 @@ jobs:
   timeoutInMinutes: 300
   variables:
     AL_PIPELINENAME: 'PublishToProduction'
-    environmentsNameFilter: $(AL_PROD_ENVIRONMENTNAMESFILTER)
+    AL_ENVIRONMENTFILTER: $(AL_PROD_ENVIRONMENTNAME)
 
   steps:
   - checkout: self
     path: App
   - checkout: BCDevOpsFlows
     path: BCDevOpsFlows
+
+  - task: NuGetToolInstaller@1
+    displayName: Nuget Install
+
+  - task: NuGetAuthenticate@1
+    displayName: Nuget Authenticate 
 
   - task: PowerShell@2
     displayName: 'Initialize'
@@ -51,32 +61,44 @@ jobs:
     inputs:
       pwsh: true
       filePath: '..\BCDevOpsFlows\VerifyAuthContext\VerifyAuthContext.ps1'
-      arguments: '-environmentsNameFilter "$(environmentsNameFilter)"'
-      warningPreference: 'stop'
-      failOnStderr: true
-      
-  - task: PowerShell@2
-    displayName: 'Determine Artifact Url'
-    inputs:
-      pwsh: true
-      filePath: '..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1'
+      arguments: '-environmentsNameFilter "$(AL_ENVIRONMENTFILTER)"'
       warningPreference: 'continue'
-
-  - task: PowerShell@2
-    displayName: 'Run Pipeline (Build)'
-    inputs:
-      pwsh: true
-      filePath: '..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1'
-      arguments: '-artifact "$(AL_ARTIFACT)"'
-      warningPreference: 'continue'
+      showWarnings: true
       failOnStderr: true
 
   - task: PowerShell@2
-    displayName: 'Store App file locally'
+    displayName: 'Initialize Nuget'
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\InitNuget\InitNuget.ps1'
+
+  - task: PowerShell@2
+    displayName: 'Determine Nuget Packages'
+    env:
+      AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\DetermineNugetPackages\DetermineNugetPackages.ps1'
+      warningPreference: 'continue'
+      showWarnings: true
+
+  - task: PowerShell@2
+    displayName: 'Build with Nuget'
+    inputs:
+      pwsh: true
+      filePath: '..\BCDevOpsFlows\BuildWithNuget\BuildWithNuget.ps1'
+      warningPreference: 'continue'
+      showWarnings: true
+      failOnStderr: true
+
+  - task: PowerShell@2
+    displayName: 'Deliver App Files'
     condition: succeeded()
+    env:
+      AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
     inputs:
       pwsh: true
-      filePath: '..\BCDevOpsFlows\StoreAppLocally\StoreAppLocally.ps1'
+      filePath: '..\BCDevOpsFlows\DeliverAppFile\DeliverAppFile.ps1'
       failOnStderr: true
 
   - task: PowerShell@2
@@ -87,8 +109,9 @@ jobs:
     inputs:
       pwsh: true
       filePath: '..\BCDevOpsFlows\DeployToCloud\DeployToCloud.ps1'
-      arguments: '-deployToEnvironmentsNameFilter "$(environmentsNameFilter)" -deploymentType "Publish"'
+      arguments: '-deployToEnvironmentsNameFilter "$(AL_ENVIRONMENTFILTER)" -deploymentType "Publish"'
       warningPreference: 'continue'
+      showWarnings: true
       failOnStderr: true
 
   - task: PowerShell@2
