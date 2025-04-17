@@ -1,0 +1,23 @@
+{
+  "artifact": "////latest",
+  "testFolders": [],
+  "customCodeCops": [],
+  "enableCodeCop": false,
+  "enableUICop": false,
+  "enableAppSourceCop": false,
+  "enablePerTenantExtensionCop": false,
+  "workflowTrigger": {
+    "batch": true,
+    "branches": {
+      "include": [
+        "test",
+        "preview"
+      ]
+    },
+    "paths": {
+      "exclude": [
+        ".azure-pipelines"
+      ]
+    }
+  }
+}

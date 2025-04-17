@@ -1,0 +1,9 @@
+{
+    "pipelineBranch": "main",
+    "pipelineFolderStructure": "Repository",
+    "BCDevOpsFlowsPoolName": "",
+    "BCDevOpsFlowsResourceRepositoryName": "",
+    "BCDevOpsFlowsResourceRepositoryBranch": "main",
+    "BCDevOpsFlowsServiceConnectionName": "",
+    "BCDevOpsFlowsVariableGroup": ""
+}
