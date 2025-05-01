@@ -63,6 +63,14 @@ jobs:
       warningPreference: continue
       showWarnings: true
   - task: PowerShell@2
+    displayName: Increment Version (if configured)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\IncrementVersion\IncrementVersion.ps1
+      failOnStderr: true
+      warningPreference: continue
+      showWarnings: true
+  - task: PowerShell@2
     displayName: Build with Nuget
     inputs:
       pwsh: true
