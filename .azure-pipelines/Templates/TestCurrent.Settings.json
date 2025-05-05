@@ -1,5 +1,6 @@
 {
   "artifact": "////latest",
+  "removeInternalsVisibleTo": false,
   "workflowSchedule": {
     "cron": "0 2 * * 4",
     "displayName": "Every Thursday at 2am",
