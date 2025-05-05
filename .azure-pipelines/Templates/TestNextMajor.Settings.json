@@ -1,5 +1,6 @@
 {
   "artifact": "////nextmajor",
+  "removeInternalsVisibleTo": false,
   "workflowSchedule": {
     "cron": "0 2 15 * *",
     "displayName": "Fifteenth of every month",
