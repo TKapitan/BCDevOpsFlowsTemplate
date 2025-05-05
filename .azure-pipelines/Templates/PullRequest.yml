@@ -67,7 +67,7 @@ jobs:
       testResultsFiles: '**/$(testResults)'
       searchFolder: $(Common.TestResultsDirectory)
       failTaskOnFailedTests: true
-      failTaskOnFailureToPublishResults: true
+      failTaskOnFailureToPublishResults: $(AL_FAILPUBLISHTESTSONFAILURETOPUBLISHRESULTS)
   - task: PowerShell@2
     displayName: Cleanup
     condition: always()
