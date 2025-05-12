@@ -20,6 +20,8 @@ jobs:
   steps:
   - checkout: self
     path: App
+    persistCredentials: true
+    clean: true
   - checkout: BCDevOpsFlows
     path: BCDevOpsFlows
   - task: NuGetToolInstaller@1
