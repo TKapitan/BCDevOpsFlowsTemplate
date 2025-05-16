@@ -20,6 +20,8 @@ jobs:
   steps:
   - checkout: self
     path: App
+    persistCredentials: true
+    clean: true
   - checkout: BCDevOpsFlows
     path: BCDevOpsFlows
   - task: NuGetToolInstaller@1
@@ -88,6 +90,14 @@ jobs:
       filePath: ..\BCDevOpsFlows\DeliverAppFile\DeliverAppFile.ps1
       arguments: -isPreview
       failOnStderr: true
+  - task: PowerShell@2
+    displayName: Push Changes Back to Repo (if any)
+    inputs:
+      pwsh: true
+      filePath: ..\BCDevOpsFlows\PushBackToRepo\PushBackToRepo.ps1
+      failOnStderr: true
+      warningPreference: continue
+      showWarnings: true
   - task: PowerShell@2
     displayName: Deploy to Cloud
     condition: and(succeeded(),ne(variables['AL_AUTHCONTEXT'],''))
