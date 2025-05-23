@@ -77,7 +77,7 @@ jobs:
     inputs:
       pwsh: true
       filePath: ..\BCDevOpsFlows\BuildWithNuget\BuildWithNuget.ps1
-      warningPreference: continue
+      warningPreference: stop
       showWarnings: true
       failOnStderr: true
   - task: PowerShell@2
