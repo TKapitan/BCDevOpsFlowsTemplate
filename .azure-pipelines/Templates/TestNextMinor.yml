@@ -41,21 +41,21 @@ jobs:
       pwsh: true
       filePath: ..\BCDevOpsFlows\InitNuget\InitNuget.ps1
   - task: PowerShell@2
-    displayName: Determine Artifact Url
+    displayName: Determine Packages
     env:
       AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
     inputs:
       pwsh: true
-      filePath: ..\BCDevOpsFlows\DetermineArtifactUrl\DetermineArtifactUrl.ps1
+      filePath: ..\BCDevOpsFlows\DeterminePackages\DeterminePackages.ps1
       warningPreference: continue
       showWarnings: true
   - task: PowerShell@2
-    displayName: Run Pipeline (Build)
+    displayName: Build
     env:
       AL_TRUSTEDNUGETFEEDS_INTERNAL: $(AL_TRUSTEDNUGETFEEDS)
     inputs:
       pwsh: true
-      filePath: ..\BCDevOpsFlows\RunPipeline\RunPipeline.ps1
+      filePath: ..\BCDevOpsFlows\Build\Build.ps1
       arguments: -artifact "$(AL_ARTIFACT)"
       warningPreference: continue
       showWarnings: true
