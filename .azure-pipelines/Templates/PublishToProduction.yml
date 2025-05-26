@@ -83,6 +83,15 @@ jobs:
       warningPreference: continue
       showWarnings: true
       failOnStderr: true
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: and(succeeded(),ne(variables['TestResults'],''))
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: '**/$(testResults)'
+      searchFolder: $(Common.TestResultsDirectory)
+      failTaskOnFailedTests: true
+      failTaskOnFailureToPublishResults: $(AL_FAILPUBLISHTESTSONFAILURETOPUBLISHRESULTS)
   - task: PowerShell@2
     displayName: Deliver App Files
     condition: succeeded()
