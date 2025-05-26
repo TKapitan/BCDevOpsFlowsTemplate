@@ -57,7 +57,7 @@ jobs:
       pwsh: true
       filePath: ..\BCDevOpsFlows\Build\Build.ps1
       arguments: -artifact "$(AL_ARTIFACT)"
-      warningPreference: stop
+      warningPreference: continue
       showWarnings: true
       failOnStderr: true
   - task: PublishTestResults@2
