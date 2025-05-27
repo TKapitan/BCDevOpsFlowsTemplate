@@ -1,4 +1,5 @@
 {
   "artifact": "////latest",
-  "removeInternalsVisibleTo": false
+  "removeInternalsVisibleTo": false,
+  "failOn": "Warning"
 }
