@@ -6,6 +6,7 @@
   "enableUICop": false,
   "enableAppSourceCop": false,
   "enablePerTenantExtensionCop": false,
+  "runWith": "NuGet",
   "workflowTrigger": {
     "batch": true,
     "branches": {
