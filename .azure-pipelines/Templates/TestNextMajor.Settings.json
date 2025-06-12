@@ -1,5 +1,6 @@
 {
   "artifact": "////nextmajor",
+  "skipUpgrade": true,
   "removeInternalsVisibleTo": false,
   "workflowSchedule": {
     "cron": "0 2 15 * *",
