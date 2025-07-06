@@ -1,5 +1,22 @@
 {
   "artifact": "////latest",
   "removeInternalsVisibleTo": false,
-  "failOn": "Warning"
+  "failOn": "Warning",
+  "workflowPRTrigger": {
+    "autoCancel": true,
+    "drafts": false,
+    "branches": {
+      "include": [
+        "test",
+        "preview",
+        "main",
+        "master"
+      ]
+    },
+    "paths": {
+      "include": [
+        "*.al"
+      ]
+    }
+  }
 }
